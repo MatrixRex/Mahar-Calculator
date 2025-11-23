@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="bn">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Realtime Mahr Fatemi Calculator</title>
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
-    
+
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -38,203 +39,145 @@
             }
         }
     </script>
-    <style>
-        body {
-            font-family: 'Tiro Bangla', serif;
-        }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .dark .glass-panel {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-offwhite dark:bg-darkblack text-emerald-900 dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col">
+
+<body
+    class="bg-offwhite dark:bg-darkblack text-emerald-900 dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col">
 
     <!-- Header / Dark Mode Toggle -->
     <header class="absolute top-0 right-0 p-6 z-50">
-        <button id="theme-toggle" class="p-3 rounded-full bg-emerald-900/10 dark:bg-white/10 hover:bg-emerald-900/20 dark:hover:bg-white/20 transition-all text-emerald-900 dark:text-gold-400">
+        <button id="theme-toggle"
+            class="p-3 rounded-full bg-emerald-900/10 dark:bg-white/10 hover:bg-emerald-900/20 dark:hover:bg-white/20 transition-all text-emerald-900 dark:text-gold-400">
             <i class="ph ph-sun text-xl hidden dark:block"></i>
             <i class="ph ph-moon text-xl block dark:hidden"></i>
         </button>
     </header>
 
     <!-- Hero Section -->
-    <main class="flex-grow flex flex-col items-center justify-center text-center px-4 relative py-12 lg:py-0 min-h-[70vh]">
+    <main
+        class="flex-grow flex flex-col items-center justify-center text-center px-4 relative py-12 lg:py-0 min-h-[60vh]">
         <div class="space-y-6 max-w-4xl mx-auto z-10">
-            <span class="inline-block px-4 py-1 rounded-full bg-emerald-900/10 dark:bg-gold-400/10 text-emerald-900 dark:text-gold-400 text-sm font-medium tracking-wide opacity-80">
-                Realtime Silver Price
-            </span>
-            
+
             <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-emerald-900 dark:text-white leading-tight">
-                মহরে ফাতেমি <br class="md:hidden"/>(৫০০ দিরহাম)
+                আজকের মহরে ফাতেমি <br class="md:hidden" />
             </h1>
 
             <div class="py-4">
                 <div id="loading-price" class="text-5xl md:text-8xl font-bold text-gray-400 animate-pulse">
                     Loading...
                 </div>
-                <div id="price-display" class="hidden text-6xl md:text-8xl lg:text-9xl font-bold text-gold-400 drop-shadow-sm tracking-tight">
+                <div id="price-display"
+                    class="hidden text-6xl md:text-8xl lg:text-9xl font-bold text-gold-400 drop-shadow-sm tracking-tight">
                     <!-- Price will be injected here -->
                 </div>
             </div>
 
             <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-400">
-                ১,৫৩০.৯ গ্রাম রৌপ্য (Silver)
+                ৫০০ দিরহাম = ১,৫৩০.৯ গ্রাম / ১৩১.২৫ ভরি রৌপ্য
             </p>
 
-            <div id="last-updated" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-sm">
-                <i class="ph ph-clock"></i>
-                <span>Last Updated: --</span>
-            </div>
-        </div>
+            <p id="per-gram-container" class="text-lg text-emerald-900 dark:text-gold-400 font-medium mt-2 hidden">
+                আজকের রুপা প্রতি গ্রাম : <span id="per-gram-display">--</span> টাকা
+            </p>
 
-        <!-- Bouncing Chevron -->
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-emerald-900 dark:text-gold-400 opacity-50">
-            <i class="ph ph-caret-down text-3xl"></i>
+            <p class="text-sm text-gray-500 dark:text-gray-500 italic mt-2">
+                "তথ্যগুলো শুধুমাত্র ধারণার জন্য। চূড়ান্ত সিদ্ধান্তের আগে স্থানীয় মুফতি সাহেবের পরামর্শ নিন।"
+            </p>
+
+            <div id="last-updated"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-sm">
+                <i class="ph ph-clock"></i>
+                <span></span>
+            </div>
         </div>
     </main>
 
     <!-- Info Grid -->
     <section class="bg-emerald-900/5 dark:bg-white/5 py-12 px-4 lg:px-8 min-h-[30vh]">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            
-            <!-- Calculator Card -->
-            <div class="glass-panel rounded-2xl p-8 text-center md:text-left hover:bg-emerald-900/10 dark:hover:bg-white/10 transition-all duration-300 group">
-                <div class="flex items-center justify-center md:justify-start gap-3 mb-4 text-emerald-900 dark:text-gold-400">
-                    <i class="ph ph-calculator text-3xl group-hover:scale-110 transition-transform"></i>
-                    <h3 class="text-xl font-bold">সর্বনিম্ন মহর (শরীয়ত সম্মত)</h3>
-                </div>
-                <div id="min-mahr-display" class="text-4xl font-bold text-emerald-900 dark:text-white mb-2">
-                    --
-                </div>
-                <p class="text-gray-600 dark:text-gray-400 text-sm">
-                    ১০ দিরহাম / ৩০.৬১৮ গ্রাম
-                </p>
-            </div>
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8">
 
-            <!-- Definitions Card -->
-            <div class="glass-panel rounded-2xl p-8 space-y-6">
-                <div>
-                    <h4 class="font-bold text-emerald-900 dark:text-gold-400 mb-2 flex items-center gap-2">
-                        <i class="ph ph-users"></i> মহরে মিছিল
-                    </h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                        কনের বাবার পরিবারের কনের সমসাময়িক ঐ সমস্ত নারী যারা সম্পদ, সৌন্দর্য, দ্বীনদারিতা ও বয়সে কনের সমকক্ষ, তাদের মহরের সমপরিমাণ মহর।
-                    </p>
-                </div>
-                <div class="w-full h-px bg-emerald-900/10 dark:bg-white/10"></div>
-                <div>
-                    <h4 class="font-bold text-emerald-900 dark:text-gold-400 mb-2 flex items-center gap-2">
-                        <i class="ph ph-handshake"></i> মহরে মুসাম্মা
-                    </h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                        বর ও কনে পক্ষের পরস্পর সম্মতিতে যেই মহর নির্ধারিত হয়ে থাকে (শর্ত হলো ১০ দিরহামের কম না হওয়া)।
-                    </p>
+            <!-- Other Mahr Section (Spans 3 columns) -->
+            <div class="col-span-1 md:col-span-3">
+                <h2
+                    class="text-2xl font-bold text-emerald-900 dark:text-white mb-6 border-b border-emerald-900/10 dark:border-white/10 pb-2">
+                    অন্যান্য মহর
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Calculator Card -->
+                    <div
+                        class="glass-panel rounded-2xl p-6 text-center md:text-left hover:bg-emerald-900/10 dark:hover:bg-white/10 transition-all duration-300 group h-full">
+                        <div
+                            class="flex items-center justify-center md:justify-start gap-3 mb-4 text-emerald-900 dark:text-gold-400">
+                            <i class="ph ph-calculator text-3xl group-hover:scale-110 transition-transform"></i>
+                            <h3 class="text-xl font-bold">সর্বনিম্ন মহর</h3>
+                        </div>
+                        <div id="min-mahr-display"
+                            class="text-3xl lg:text-4xl font-bold text-emerald-900 dark:text-white mb-2">
+                            --
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">
+                            ১০ দিরহাম / ৩০.৬১৮ গ্রাম / ২.৬২৫ ভরি
+                        </p>
+                    </div>
+
+                    <!-- Definition Card 1: Mahr Mithil -->
+                    <div class="glass-panel rounded-2xl p-6 h-full">
+                        <h4 class="text-xl font-bold text-emerald-900 dark:text-gold-400 mb-4 flex items-center gap-2">
+                            <i class="ph ph-users"></i> মহরে মিছিল
+                        </h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                            কনের বাবার পরিবারের কনের সমসাময়িক ঐ সমস্ত নারী যারা সম্পদ, সৌন্দর্য, দ্বীনদারিতা ও বয়সে
+                            কনের
+                            সমকক্ষ, তাদের মহরের সমপরিমাণ মহর।
+                        </p>
+                    </div>
+
+                    <!-- Definition Card 2: Mahr Musamma -->
+                    <div class="glass-panel rounded-2xl p-6 h-full">
+                        <h4 class="text-xl font-bold text-emerald-900 dark:text-gold-400 mb-4 flex items-center gap-2">
+                            <i class="ph ph-handshake"></i> মহরে মুসাম্মা
+                        </h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                            বর ও কনে পক্ষের পরস্পর সম্মতিতে যেই মহর নির্ধারিত হয়ে থাকে (শর্ত হলো ১০ দিরহামের কম না
+                            হওয়া)।
+                        </p>
+                    </div>
                 </div>
             </div>
 
             <!-- Trust & Credits Card -->
-            <div class="glass-panel rounded-2xl p-8 flex flex-col justify-between">
-                <div class="space-y-4">
-                    <h3 class="text-xl font-bold text-emerald-900 dark:text-white mb-4">তথ্যসূত্র ও সতর্কতা</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 italic">
-                        "তথ্যগুলো শুধুমাত্র ধারণার জন্য। চূড়ান্ত সিদ্ধান্তের আগে স্থানীয় মুফতি সাহেবের পরামর্শ নিন।"
-                    </p>
-                    <div class="flex flex-wrap gap-3 mt-4">
-                        <a href="#" class="px-4 py-2 rounded-lg bg-emerald-900 text-white text-sm hover:bg-emerald-800 transition-colors">
-                            মাসিক আল-কাউসার
-                        </a>
-                        <a href="#" class="px-4 py-2 rounded-lg bg-emerald-900 text-white text-sm hover:bg-emerald-800 transition-colors">
-                            জাওয়াহিরুল ফিকহ
-                        </a>
+            <div class="col-span-1 flex flex-col pt-0 md:pt-14">
+                <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between h-full">
+                    <div class="space-y-4">
+                        <h3 class="text-xl font-bold text-emerald-900 dark:text-white mb-4">তথ্যসূত্র ও সতর্কতা</h3>
+                        <div class="flex flex-col gap-3 mt-4">
+                            <a href="https://www.alkawsar.com/bn/qa/answers/detail/1394/" target="_blank"
+                                rel="noopener noreferrer"
+                                class="px-4 py-3 rounded-lg bg-emerald-900 text-white text-sm hover:bg-emerald-800 transition-colors text-center">
+                                মাসিক আল-কাউসার
+                            </a>
+                            <a href="https://ifatwa.info/220/" target="_blank" rel="noopener noreferrer"
+                                class="px-4 py-3 rounded-lg bg-emerald-900 text-white text-sm hover:bg-emerald-800 transition-colors text-center">
+                                জাওয়াহিরুল ফিকহ
+                            </a>
+                        </div>
                     </div>
-                </div>
-                <div class="mt-8 pt-4 border-t border-emerald-900/10 dark:border-white/10 text-center md:text-left">
-                    <p class="text-xs text-gray-500">
-                        Developed by <span class="font-bold text-emerald-900 dark:text-gold-400">Antigravity</span>
-                    </p>
                 </div>
             </div>
 
         </div>
+
+        <!-- Developer Credit -->
+        <div class="mt-12 text-center">
+            <p class="text-xs text-gray-500 dark:text-gray-500">
+                Developed by <a href="https://github.com/MatrixRex" target="_blank"
+                    class="font-bold text-emerald-900 dark:text-gold-400 hover:underline">MatrixRex</a>
+            </p>
+        </div>
     </section>
 
-    <script>
-        // State Management
-        const themeToggle = document.getElementById('theme-toggle');
-        const html = document.documentElement;
-        
-        // Initial Theme Check
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            html.classList.add('dark');
-        } else {
-            html.classList.remove('dark');
-        }
-
-        // Theme Toggle Handler
-        themeToggle.addEventListener('click', () => {
-            html.classList.toggle('dark');
-            if (html.classList.contains('dark')) {
-                localStorage.theme = 'dark';
-            } else {
-                localStorage.theme = 'light';
-            }
-        });
-
-        // Data Fetching & Calculation
-        async function fetchPrice() {
-            try {
-                const response = await fetch('./price.json');
-                if (!response.ok) throw new Error('Price data not found');
-                
-                const data = await response.json();
-                updateUI(data);
-            } catch (error) {
-                console.error('Error fetching price:', error);
-                // Keep loading state or show error
-                document.getElementById('loading-price').innerText = "Error Loading Data";
-            }
-        }
-
-        function updateUI(data) {
-            const priceInBDT = data.price; // Price of 1 Troy Oz Silver in BDT
-            const pricePerGram = priceInBDT / 31.1035;
-            
-            const fatemiMahr = pricePerGram * 1530.9;
-            const minMahr = pricePerGram * 30.618;
-
-            // Formatter
-            const formatter = new Intl.NumberFormat('bn-BD', { 
-                style: 'currency', 
-                currency: 'BDT',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            });
-
-            // Update DOM
-            document.getElementById('loading-price').classList.add('hidden');
-            const priceDisplay = document.getElementById('price-display');
-            priceDisplay.classList.remove('hidden');
-            priceDisplay.innerText = formatter.format(fatemiMahr);
-
-            document.getElementById('min-mahr-display').innerText = formatter.format(minMahr);
-
-            // Date Formatting
-            const date = new Date(data.timestamp * 1000);
-            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('last-updated').innerHTML = `
-                <i class="ph ph-clock"></i>
-                <span>Last Updated: ${date.toLocaleDateString('en-US', dateOptions)}</span>
-            `;
-        }
-
-        // Init
-        fetchPrice();
-    </script>
+    <script src="script.js"></script>
 </body>
+
 </html>
