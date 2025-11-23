@@ -1,0 +1,39 @@
+name: Update Silver Price
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # Runs at 06:00 UTC every day
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  update-price:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Fetch Silver Price
+        env:
+          GOLD_API_KEY: ${{ secrets.GOLD_API_KEY }}
+        run: |
+          # Fetch data from GoldAPI
+          response=$(curl -s -H "x-access-token: $GOLD_API_KEY" "https://www.goldapi.io/api/XAG/BDT")
+          
+          # Check if response is valid JSON and contains price
+          if echo "$response" | jq -e .price >/dev/null; then
+            echo "Price fetched successfully"
+            echo "$response" > price.json
+          else
+            echo "Failed to fetch price"
+            echo "$response"
+            exit 1
+          fi
+
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update silver price [skip ci]"
+          file_pattern: price.json
