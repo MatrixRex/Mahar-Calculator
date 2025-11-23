@@ -73,5 +73,30 @@ function updateUI(data) {
     `;
 }
 
+// Mouse Tracking for Glow Effect with Smooth Lag
+let mouseX = 0;
+let mouseY = 0;
+let cursorX = 0;
+let cursorY = 0;
+
+document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+
+function animateGlow() {
+    // Linear interpolation (lerp) for smooth lag
+    // The 0.03 factor determines the speed/lag. Lower = more lag.
+    cursorX += (mouseX - cursorX) * 0.03;
+    cursorY += (mouseY - cursorY) * 0.03;
+
+    document.body.style.setProperty('--mouse-x', `${cursorX}px`);
+    document.body.style.setProperty('--mouse-y', `${cursorY}px`);
+
+    requestAnimationFrame(animateGlow);
+}
+
+animateGlow();
+
 // Init
 fetchPrice();

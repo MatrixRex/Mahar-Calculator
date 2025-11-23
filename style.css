@@ -1,12 +1,69 @@
 body {
     font-family: 'Tiro Bangla', serif;
+    position: relative; /* For pseudo-elements */
 }
+
+main {
+    position: relative;
+}
+
+/* Static Background Pattern */
+main::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('bg-pattern.svg');
+    background-repeat: repeat;
+    background-size: 300px 300px;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.03; /* Subtle Black pattern on Light BG */
+    filter: grayscale(1);
+}
+
+/* Glow Effect (Masked to Pattern) */
+main::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    /* Light Mode Glow: Gold (Visible on White) */
+    background: radial-gradient(1600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(212, 175, 55, 0.25), transparent 40%);
+    z-index: 0;
+    pointer-events: none;
+    -webkit-mask-image: url('bg-pattern.svg');
+    mask-image: url('bg-pattern.svg');
+    -webkit-mask-repeat: repeat;
+    mask-repeat: repeat;
+    -webkit-mask-size: 300px 300px;
+    mask-size: 300px 300px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+/* Show glow on hover/move */
+body:hover main::after {
+    opacity: 1;
+}
+
+.dark main::before {
+    filter: invert(1); /* White pattern on Dark BG */
+    opacity: 0.05;
+}
+
+.dark main::after {
+    /* Dark Mode Glow: White (Visible on Dark) */
+    background: radial-gradient(1600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.1), transparent 30%);
+}
+
 .glass-panel {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.6); /* More transparent for light mode */
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
+
 .dark .glass-panel {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(18, 18, 18, 0.6); /* More transparent for dark mode */
     border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
 }
