@@ -19,18 +19,49 @@ jobs:
         env:
           GOLD_API_KEY: ${{ secrets.GOLD_API_KEY }}
         run: |
-          # Fetch data from GoldAPI
-          response=$(curl -s -H "x-access-token: $GOLD_API_KEY" "https://www.goldapi.io/api/XAG/BDT")
+          # 1. Fetch Silver Price in USD (XAG/USD)
+          echo "Fetching Silver Price (USD)..."
+          silver_response=$(curl -s -H "x-access-token: $GOLD_API_KEY" "https://www.goldapi.io/api/XAG/USD")
           
-          # Check if response is valid JSON and contains price
-          if echo "$response" | jq -e .price >/dev/null; then
-            echo "Price fetched successfully"
-            echo "$response" > price.json
-          else
-            echo "Failed to fetch price"
-            echo "$response"
+          # Extract price using jq
+          silver_price_usd=$(echo "$silver_response" | jq -r '.price')
+          
+          if [ "$silver_price_usd" == "null" ] || [ -z "$silver_price_usd" ]; then
+            echo "Failed to fetch Silver Price (USD)"
+            echo "$silver_response"
             exit 1
           fi
+          echo "Silver Price (USD): $silver_price_usd"
+
+          # 2. Fetch USD to BDT Exchange Rate (Free Public API)
+          echo "Fetching USD to BDT Rate..."
+          currency_response=$(curl -s "https://open.er-api.com/v6/latest/USD")
+          usd_to_bdt=$(echo "$currency_response" | jq -r '.rates.BDT')
+
+          if [ "$usd_to_bdt" == "null" ] || [ -z "$usd_to_bdt" ]; then
+            echo "Failed to fetch USD/BDT rate, using fallback 120.0"
+            usd_to_bdt=120.0
+          fi
+          echo "USD to BDT Rate: $usd_to_bdt"
+
+          # 3. Calculate Price in BDT
+          price_bdt=$(echo "$silver_price_usd * $usd_to_bdt" | bc)
+          echo "Calculated Silver Price (BDT): $price_bdt"
+
+          # 4. Create JSON Output
+          timestamp=$(date +%s)
+          
+          # Construct JSON manually to ensure correct format
+          echo "{
+            \"timestamp\": $timestamp,
+            \"metal\": \"XAG\",
+            \"currency\": \"BDT\",
+            \"price\": $price_bdt,
+            \"rate_usd\": $silver_price_usd,
+            \"exchange_rate\": $usd_to_bdt
+          }" > price.json
+          
+          cat price.json
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
