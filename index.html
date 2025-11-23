@@ -1,31 +1,73 @@
-<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<!DOCTYPE html>
+<html lang="bn">
 
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-    tailwind.config = {
-        darkMode: 'class',
-        theme: {
-            extend: {
-                colors: {
-                    emerald: {
-                        900: '#0F5132', // Deep Emerald Green
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahr Fatemi Ammount Today | আজকের মহরে ফাতেমি</title>
+    <meta name="description"
+        content="Calculate the current Mahr Fatemi amount in BDT based on real-time silver prices. Get accurate calculations for Mahr Fatemi, Minimum Mahr, and Mahr Mithil.">
+    <meta name="keywords"
+        content="Mahr Fatemi, Mahr Calculator, Silver Price BD, Islamic Marriage, Denmohor, মহরে ফাতেমি, দেনমোহর, মহর ক্যালকুলেটর">
+    <meta name="author" content="MatrixRex">
+    <link rel="canonical" href="https://matrixrex.github.io/Mahar-Calculator/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://matrixrex.github.io/Mahar-Calculator/">
+    <meta property="og:title" content="Mahr Fatemi Ammount Today | আজকের মহরে ফাতেমি">
+    <meta property="og:description" content="Real-time Mahr Fatemi calculator based on current silver market rates.">
+    <meta property="og:image" content="https://matrixrex.github.io/Mahar-Calculator/android-chrome-512x512.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://matrixrex.github.io/Mahar-Calculator/">
+    <meta property="twitter:title" content="Mahr Fatemi Ammount Today | আজকের মহরে ফাতেমি">
+    <meta property="twitter:description"
+        content="Real-time Mahr Fatemi calculator based on current silver market rates.">
+    <meta property="twitter:image" content="https://matrixrex.github.io/Mahar-Calculator/android-chrome-512x512.png">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        emerald: {
+                            900: '#0F5132', // Deep Emerald Green
+                        },
+                        gold: {
+                            400: '#D4AF37', // Metallic Gold
+                            500: '#C5A028',
+                        },
+                        offwhite: '#F8F9FA',
+                        darkblack: '#121212',
                     },
-                    gold: {
-                        400: '#D4AF37', // Metallic Gold
-                        500: '#C5A028',
-                    },
-                    offwhite: '#F8F9FA',
-                    darkblack: '#121212',
-                },
-                fontFamily: {
-                    bangla: ['"Tiro Bangla"', 'serif'],
+                    fontFamily: {
+                        bangla: ['"Tiro Bangla"', 'serif'],
+                    }
                 }
             }
         }
-    }
-</script>
-<link rel="stylesheet" href="style.css">
+    </script>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body
@@ -136,7 +178,7 @@
             <div class="col-span-1 flex flex-col pt-0 md:pt-14">
                 <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between h-full">
                     <div class="space-y-4">
-                        <h3 class="text-xl font-bold text-emerald-900 dark:text-white mb-4">তথ্যসূত্র ও সতর্কতা</h3>
+                        <h3 class="text-xl font-bold text-emerald-900 dark:text-white mb-4">তথ্যসূত্র</h3>
                         <div class="flex flex-col gap-3 mt-4">
                             <a href="https://www.alkawsar.com/bn/qa/answers/detail/1394/" target="_blank"
                                 rel="noopener noreferrer"
