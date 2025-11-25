@@ -4,28 +4,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mahr Fatemi Ammount Today | আজকের মহরে ফাতেমি</title>
+    <title>Mahr Fatemi Amount Today in Bangladesh | আজকের মহরে ফাতেমি</title>
     <meta name="description"
-        content="Calculate the current Mahr Fatemi amount in BDT based on real-time silver prices. Get accurate calculations for Mahr Fatemi, Minimum Mahr, and Mahr Mithil.">
+        content="Calculate the current Mahr Fatemi & Mohor amount in Bangladesh (BDT) today. Real-time silver price based calculator for Islamic Marriage.">
     <meta name="keywords"
-        content="Mahr Fatemi, Mahr Calculator, Silver Price BD, Islamic Marriage, Denmohor, মহরে ফাতেমি, দেনমোহর, মহর ক্যালকুলেটর">
+        content="Mahr Fatemi, Mahr Calculator, Silver Price BD, Islamic Marriage, Denmohor, Fatemi Mohor, Mahr Fatemi Bangladesh, Today Mahr Price, Mohor Calculator BD, মহরে ফাতেমি, দেনমোহর, মহর ক্যালকুলেটর">
     <meta name="author" content="MatrixRex">
     <link rel="canonical" href="https://matrixrex.github.io/Mahar-Calculator/">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://matrixrex.github.io/Mahar-Calculator/">
-    <meta property="og:title" content="Mahr Fatemi Ammount Today | আজকের মহরে ফাতেমি">
-    <meta property="og:description" content="Real-time Mahr Fatemi calculator based on current silver market rates.">
+    <meta property="og:title" content="Mahr Fatemi Amount Today in Bangladesh | আজকের মহরে ফাতেমি">
+    <meta property="og:description"
+        content="Calculate the current Mahr Fatemi & Mohor amount in Bangladesh (BDT) today. Real-time silver price based calculator.">
     <meta property="og:image" content="https://matrixrex.github.io/Mahar-Calculator/android-chrome-512x512.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://matrixrex.github.io/Mahar-Calculator/">
-    <meta property="twitter:title" content="Mahr Fatemi Ammount Today | আজকের মহরে ফাতেমি">
+    <meta property="twitter:title" content="Mahr Fatemi Amount Today in Bangladesh | আজকের মহরে ফাতেমি">
     <meta property="twitter:description"
-        content="Real-time Mahr Fatemi calculator based on current silver market rates.">
+        content="Calculate the current Mahr Fatemi & Mohor amount in Bangladesh (BDT) today. Real-time silver price based calculator.">
     <meta property="twitter:image" content="https://matrixrex.github.io/Mahar-Calculator/android-chrome-512x512.png">
+
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Mahr Fatemi Calculator",
+      "description": "Calculate the current Mahr Fatemi amount in BDT based on real-time silver prices.",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "BDT"
+      }
+    }
+    </script>
 
     <!-- Favicons -->
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
@@ -83,7 +101,7 @@
     </header>
 
     <!-- Hero Section -->
-    <main
+    <main id="home"
         class="flex-grow flex flex-col items-center justify-center text-center px-4 relative py-12 lg:py-0 min-h-[60vh]">
         <div class="space-y-6 max-w-4xl mx-auto z-10">
 
@@ -106,7 +124,7 @@
             </p>
 
             <p id="per-gram-container" class="text-lg text-emerald-900 dark:text-gold-400 font-medium mt-2 hidden">
-                আজকের রুপা প্রতি গ্রাম : <span id="per-gram-display">--</span> টাকা
+                আজকের রুপা প্রতি গ্রাম (বাংলাদেশ): <span id="per-gram-display">--</span> টাকা
             </p>
 
             <p class="text-sm text-gray-500 dark:text-gray-500 italic mt-2">
@@ -126,7 +144,7 @@
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8">
 
             <!-- Other Mahr Section (Spans 3 columns) -->
-            <div class="col-span-1 md:col-span-3">
+            <div id="definitions" class="col-span-1 md:col-span-3">
                 <h2
                     class="text-2xl font-bold text-emerald-900 dark:text-white mb-6 border-b border-emerald-900/10 dark:border-white/10 pb-2">
                     অন্যান্য মহর
@@ -175,7 +193,7 @@
             </div>
 
             <!-- Trust & Credits Card -->
-            <div class="col-span-1 flex flex-col pt-0 md:pt-14">
+            <div id="references" class="col-span-1 flex flex-col pt-0 md:pt-14">
                 <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between h-full">
                     <div class="space-y-4">
                         <h3 class="text-xl font-bold text-emerald-900 dark:text-white mb-4">তথ্যসূত্র</h3>
@@ -204,6 +222,20 @@
             </p>
         </div>
     </section>
+
+    <!-- Footer for Internal Links -->
+    <footer class="bg-emerald-900/10 dark:bg-white/5 py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex justify-center gap-6 text-sm font-medium text-emerald-900 dark:text-gray-400">
+                <a href="#home" class="hover:text-gold-500 transition-colors">Home</a>
+                <a href="#definitions" class="hover:text-gold-500 transition-colors">Definitions</a>
+                <a href="#references" class="hover:text-gold-500 transition-colors">References</a>
+            </div>
+            <p class="text-xs text-gray-500 mt-4">
+                &copy; 2025 Mahar Calculator. All rights reserved.
+            </p>
+        </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>
