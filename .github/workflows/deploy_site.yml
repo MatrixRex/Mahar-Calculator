@@ -1,0 +1,54 @@
+name: Deploy Website with Version
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inject Version and Date
+        run: |
+          # 1. Get the Short Hash (e.g., a1b2c3d)
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          
+          # 2. Get the Date (e.g., 30 Nov 2025)
+          CURRENT_DATE=$(date +"%d %b %Y")
+          
+          echo "Injecting Version: $SHORT_SHA"
+          echo "Injecting Date: $CURRENT_DATE"
+
+          # 3. Replace the Hash Placeholder (Run twice to fix both Link and Text)
+          sed -i "s/COMMIT_HASH_PLACEHOLDER/$SHORT_SHA/g" index.html
+          
+          # 4. Replace the Date Placeholder
+          sed -i "s/BUILD_DATE_PLACEHOLDER/$CURRENT_DATE/g" index.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
