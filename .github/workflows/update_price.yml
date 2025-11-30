@@ -2,7 +2,7 @@ name: Update Silver Price
 
 on:
   schedule:
-    - cron: '0 6 * * *' # Runs at 06:00 UTC every day
+    - cron: '0 18 * * *' # (12:00 AM BDT)
   workflow_dispatch: # Allows manual trigger
 
 jobs:
