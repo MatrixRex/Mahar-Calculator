@@ -12,7 +12,7 @@ main::before {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: url('bg-pattern.svg');
+    background-image: url('../assets/bg-pattern.svg');
     background-repeat: repeat;
     background-size: 300px 300px;
     z-index: 0;
@@ -30,8 +30,8 @@ main::after {
     background: radial-gradient(1600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(212, 175, 55, 0.25), transparent 40%);
     z-index: 0;
     pointer-events: none;
-    -webkit-mask-image: url('bg-pattern.svg');
-    mask-image: url('bg-pattern.svg');
+    -webkit-mask-image: url('../assets/bg-pattern.svg');
+    mask-image: url('../assets/bg-pattern.svg');
     -webkit-mask-repeat: repeat;
     mask-repeat: repeat;
     -webkit-mask-size: 300px 300px;
