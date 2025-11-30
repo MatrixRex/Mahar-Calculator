@@ -23,7 +23,8 @@ themeToggle.addEventListener('click', () => {
 // Data Fetching & Calculation
 async function fetchPrice() {
     try {
-        const response = await fetch('./price.json');
+       
+        const response = await fetch('https://raw.githubusercontent.com/matrixrex/Mahar-Calculator/data/price.json');
         if (!response.ok) throw new Error('Price data not found');
         
         const data = await response.json();
