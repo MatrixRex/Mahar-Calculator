@@ -49,7 +49,21 @@ jobs:
           price_bdt=$(echo "$silver_price_usd * $usd_to_bdt" | bc)
           echo "Calculated Silver Price (BDT): $price_bdt"
 
-          # 4. Create JSON Output (Using jq for safety)
+          # 4. Calculate Mahar Amounts
+          # Price per gram = Price per Troy Oz / 31.1035
+          price_per_gram=$(echo "scale=4; $price_bdt / 31.1035" | bc)
+          
+          # Mahr Fatemi = 1530.9 grams
+          mahr_fatemi=$(echo "scale=0; $price_per_gram * 1530.9" | bc)
+          
+          # Minimum Mahr = 30.618 grams
+          minimum_mahr=$(echo "scale=0; $price_per_gram * 30.618" | bc)
+
+          echo "Price Per Gram: $price_per_gram"
+          echo "Mahr Fatemi: $mahr_fatemi"
+          echo "Minimum Mahr: $minimum_mahr"
+
+          # 5. Create JSON Output (Using jq for safety)
           # We save this INSIDE the price_data folder
           timestamp=$(date +%s)
           
@@ -60,7 +74,18 @@ jobs:
             --argjson price "$price_bdt" \
             --argjson rate "$silver_price_usd" \
             --argjson ex "$usd_to_bdt" \
-            '{timestamp: $ts, metal: $metal, currency: $currency, price: $price, rate_usd: $rate, exchange_rate: $ex}' > price_data/price.json
+            --argjson fatemi "$mahr_fatemi" \
+            --argjson min "$minimum_mahr" \
+            '{
+              timestamp: $ts, 
+              metal: $metal, 
+              currency: $currency, 
+              price: $price, 
+              rate_usd: $rate, 
+              exchange_rate: $ex,
+              mahr_fatemi: $fatemi,
+              minimum_mahr: $min
+            }' > price_data/price.json
           
           # Debug: Show the file content
           cat price_data/price.json
