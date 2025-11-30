@@ -9,31 +9,32 @@ jobs:
   update-price:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # Required to push to the branch
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Fetch Silver Price
+      - name: Fetch Silver Price & Generate JSON
         env:
           GOLD_API_KEY: ${{ secrets.GOLD_API_KEY }}
         run: |
+          # Create a specific directory for the output
+          # This helps separate the data from your source code
+          mkdir -p price_data
+
           # 1. Fetch Silver Price in USD (XAG/USD)
           echo "Fetching Silver Price (USD)..."
           silver_response=$(curl -s -H "x-access-token: $GOLD_API_KEY" "https://www.goldapi.io/api/XAG/USD")
-          
-          # Extract price using jq
           silver_price_usd=$(echo "$silver_response" | jq -r '.price')
           
           if [ "$silver_price_usd" == "null" ] || [ -z "$silver_price_usd" ]; then
             echo "Failed to fetch Silver Price (USD)"
-            echo "$silver_response"
             exit 1
           fi
           echo "Silver Price (USD): $silver_price_usd"
 
-          # 2. Fetch USD to BDT Exchange Rate (Free Public API)
+          # 2. Fetch USD to BDT Exchange Rate
           echo "Fetching USD to BDT Rate..."
           currency_response=$(curl -s "https://open.er-api.com/v6/latest/USD")
           usd_to_bdt=$(echo "$currency_response" | jq -r '.rates.BDT')
@@ -48,23 +49,29 @@ jobs:
           price_bdt=$(echo "$silver_price_usd * $usd_to_bdt" | bc)
           echo "Calculated Silver Price (BDT): $price_bdt"
 
-          # 4. Create JSON Output
+          # 4. Create JSON Output (Using jq for safety)
+          # We save this INSIDE the price_data folder
           timestamp=$(date +%s)
           
-          # Construct JSON manually to ensure correct format
-          echo "{
-            \"timestamp\": $timestamp,
-            \"metal\": \"XAG\",
-            \"currency\": \"BDT\",
-            \"price\": $price_bdt,
-            \"rate_usd\": $silver_price_usd,
-            \"exchange_rate\": $usd_to_bdt
-          }" > price.json
+          jq -n \
+            --argjson ts "$timestamp" \
+            --arg metal "XAG" \
+            --arg currency "BDT" \
+            --argjson price "$price_bdt" \
+            --argjson rate "$silver_price_usd" \
+            --argjson ex "$usd_to_bdt" \
+            '{timestamp: $ts, metal: $metal, currency: $currency, price: $price, rate_usd: $rate, exchange_rate: $ex}' > price_data/price.json
           
-          cat price.json
+          # Debug: Show the file content
+          cat price_data/price.json
 
-      - name: Commit and Push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Deploy to Data Branch
+        uses: peaceiris/actions-gh-pages@v3
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./price_data  # Only deploy the contents of this folder
+          publish_branch: data       # The separate branch for data
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update silver price [skip ci]"
-          file_pattern: price.json
+          force_orphan: true         # Keeps the history of the data branch clean (optional)
