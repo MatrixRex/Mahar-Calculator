@@ -43,8 +43,9 @@ function updateUI(data) {
     const priceInBDT = data.price; // Price of 1 Troy Oz Silver in BDT
     const pricePerGram = priceInBDT / 31.1035;
     
-    const fatemiMahr = pricePerGram * 1530.9;
-    const minMahr = pricePerGram * 30.618;
+    // Use pre-calculated values from API if available, otherwise fallback to client-side calculation
+    const fatemiMahr = data.mahr_fatemi || (pricePerGram * 1530.9);
+    const minMahr = data.minimum_mahr || (pricePerGram * 30.618);
 
     // Formatter (Number only)
     const formatter = new Intl.NumberFormat('bn-BD', { 
