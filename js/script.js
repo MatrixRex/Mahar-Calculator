@@ -3,7 +3,6 @@ const themeToggle = document.getElementById('theme-toggle');
 const html = document.documentElement;
 
 // Initial Theme Check
-// Initial Theme Check
 if (localStorage.theme === 'dark') {
     html.classList.add('dark');
 } else {
@@ -23,8 +22,12 @@ themeToggle.addEventListener('click', () => {
 // Data Fetching & Calculation
 async function fetchPrice() {
     try {
-       
-        const response = await fetch('https://raw.githubusercontent.com/matrixrex/Mahar-Calculator/data/price.json');
+        // Cache Buster: Adds a unique timestamp to the URL to prevent browser caching
+        const bustCache = new Date().getTime();
+        
+        // Fetching from the data branch with cache buster
+        const response = await fetch(`https://raw.githubusercontent.com/matrixrex/Mahar-Calculator/data/price.json?t=${bustCache}`);
+        
         if (!response.ok) throw new Error('Price data not found');
         
         const data = await response.json();
