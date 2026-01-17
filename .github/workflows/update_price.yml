@@ -2,101 +2,96 @@ name: Update Silver Price
 
 on:
   schedule:
-    - cron: '0 18 * * *' # (12:00 AM BDT)
-  workflow_dispatch: # Allows manual trigger
+    - cron: '0 18 * * *' # 12:00 AM BDT
+  workflow_dispatch:
 
 jobs:
   update-price:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Required to push to the branch
+      contents: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Fetch Silver Price & Generate JSON
+      - name: Fetch Silver Price & Generate JSON (retry on failure)
+        uses: nick-invision/retry@v3
         env:
           GOLD_API_KEY: ${{ secrets.GOLD_API_KEY }}
-        run: |
-          # Create a specific directory for the output
-          # This helps separate the data from your source code
-          mkdir -p price_data
+        with:
+          timeout_minutes: 5
+          max_attempts: 5
+          retry_wait_seconds: 20
+          command: |
+            set -e
 
-          # 1. Fetch Silver Price in USD (XAG/USD)
-          echo "Fetching Silver Price (USD)..."
-          silver_response=$(curl -s -H "x-access-token: $GOLD_API_KEY" "https://www.goldapi.io/api/XAG/USD")
-          silver_price_usd=$(echo "$silver_response" | jq -r '.price')
-          
-          if [ "$silver_price_usd" == "null" ] || [ -z "$silver_price_usd" ]; then
-            echo "Failed to fetch Silver Price (USD)"
-            exit 1
-          fi
-          echo "Silver Price (USD): $silver_price_usd"
+            mkdir -p price_data
 
-          # 2. Fetch USD to BDT Exchange Rate
-          echo "Fetching USD to BDT Rate..."
-          currency_response=$(curl -s "https://open.er-api.com/v6/latest/USD")
-          usd_to_bdt=$(echo "$currency_response" | jq -r '.rates.BDT')
+            echo "Fetching Silver Price (USD)..."
+            silver_response=$(curl -s -H "x-access-token: $GOLD_API_KEY" \
+              "https://www.goldapi.io/api/XAG/USD")
 
-          if [ "$usd_to_bdt" == "null" ] || [ -z "$usd_to_bdt" ]; then
-            echo "Failed to fetch USD/BDT rate, using fallback 120.0"
-            usd_to_bdt=120.0
-          fi
-          echo "USD to BDT Rate: $usd_to_bdt"
+            # Hard fail if response is not valid JSON
+            echo "$silver_response" | jq empty
 
-          # 3. Calculate Price in BDT
-          price_bdt=$(echo "$silver_price_usd * $usd_to_bdt" | bc)
-          echo "Calculated Silver Price (BDT): $price_bdt"
+            silver_price_usd=$(echo "$silver_response" | jq -r '.price')
 
-          # 4. Calculate Mahar Amounts
-          # Price per gram = Price per Troy Oz / 31.1035
-          price_per_gram=$(echo "scale=4; $price_bdt / 31.1035" | bc)
-          
-          # Mahr Fatemi = 1530.9 grams
-          mahr_fatemi=$(echo "scale=0; $price_per_gram * 1530.9" | bc)
-          
-          # Minimum Mahr = 30.618 grams
-          minimum_mahr=$(echo "scale=0; $price_per_gram * 30.618" | bc)
+            if [[ -z "$silver_price_usd" || "$silver_price_usd" == "null" ]]; then
+              echo "Silver price missing"
+              exit 1
+            fi
 
-          echo "Price Per Gram: $price_per_gram"
-          echo "Mahr Fatemi: $mahr_fatemi"
-          echo "Minimum Mahr: $minimum_mahr"
+            echo "Fetching USD to BDT Rate..."
+            currency_response=$(curl -s "https://open.er-api.com/v6/latest/USD")
 
-          # 5. Create JSON Output (Using jq for safety)
-          # We save this INSIDE the price_data folder
-          timestamp=$(date +%s)
-          
-          jq -n \
-            --argjson ts "$timestamp" \
-            --arg metal "XAG" \
-            --arg currency "BDT" \
-            --argjson price "$price_bdt" \
-            --argjson rate "$silver_price_usd" \
-            --argjson ex "$usd_to_bdt" \
-            --argjson fatemi "$mahr_fatemi" \
-            --argjson min "$minimum_mahr" \
-            '{
-              timestamp: $ts, 
-              metal: $metal, 
-              currency: $currency, 
-              price: $price, 
-              rate_usd: $rate, 
-              exchange_rate: $ex,
-              mahr_fatemi: $fatemi,
-              minimum_mahr: $min
-            }' > price_data/price.json
-          
-          # Debug: Show the file content
-          cat price_data/price.json
+            # Hard fail if response is not valid JSON
+            echo "$currency_response" | jq empty
+
+            usd_to_bdt=$(echo "$currency_response" | jq -r '.rates.BDT')
+
+            if [[ -z "$usd_to_bdt" || "$usd_to_bdt" == "null" ]]; then
+              echo "USD/BDT rate missing"
+              exit 1
+            fi
+
+            price_bdt=$(echo "scale=4; $silver_price_usd * $usd_to_bdt" | bc)
+            price_per_gram=$(echo "scale=4; $price_bdt / 31.1035" | bc)
+
+            mahr_fatemi=$(echo "scale=0; $price_per_gram * 1530.9" | bc)
+            minimum_mahr=$(echo "scale=0; $price_per_gram * 30.618" | bc)
+
+            timestamp=$(date +%s)
+
+            jq -n \
+              --argjson ts "$timestamp" \
+              --arg metal "XAG" \
+              --arg currency "BDT" \
+              --argjson price "$price_bdt" \
+              --argjson rate "$silver_price_usd" \
+              --argjson ex "$usd_to_bdt" \
+              --argjson fatemi "$mahr_fatemi" \
+              --argjson min "$minimum_mahr" \
+              '{
+                timestamp: $ts,
+                metal: $metal,
+                currency: $currency,
+                price: $price,
+                rate_usd: $rate,
+                exchange_rate: $ex,
+                mahr_fatemi: $fatemi,
+                minimum_mahr: $min
+              }' > price_data/price.json
+
+            cat price_data/price.json
 
       - name: Deploy to Data Branch
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./price_data  # Only deploy the contents of this folder
-          publish_branch: data       # The separate branch for data
+          publish_dir: ./price_data
+          publish_branch: data
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
           commit_message: "Update silver price [skip ci]"
-          force_orphan: true         # Keeps the history of the data branch clean (optional)
+          force_orphan: true
